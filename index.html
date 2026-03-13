@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<title>Ninjettriss Transmission</title>
+
+<style>
+
+body{
+background:black;
+color:#39ff14;
+font-family:'Share Tech Mono', monospace;
+margin:0;
+padding:0;
+text-shadow:0 0 4px #39ff14;
+overflow:hidden;
+animation:flicker 6s infinite;
+}
+
+/* CRT scanlines */
+
+body::after{
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:repeating-linear-gradient(
+0deg,
+rgba(0,255,0,0.03),
+rgba(0,255,0,0.03) 1px,
+transparent 1px,
+transparent 3px
+);
+pointer-events:none;
+z-index:1000;
+}
+
+/* flicker */
+
+@keyframes flicker{
+0%{opacity:1;}
+97%{opacity:1;}
+98%{opacity:.95;}
+99%{opacity:1;}
+100%{opacity:.97;}
+}
+
+/* boot */
+
+#boot{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+color:#39ff14;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+font-size:22px;
+z-index:2000;
+white-space:pre-line;
+}
+
+/* main layout */
+
+#main{
+display:flex;
+width:100%;
+height:100vh;
+}
+
+/* left side */
+
+#leftPanel{
+flex:1.25;
+padding:30px;
+overflow-y:auto;
+overflow-x:hidden;
+border-right:2px solid rgba(57,255,20,0.35);
+box-sizing:border-box;
+}
+
+/* right side */
+
+#rightPanel{
+flex:0.75;
+position:relative;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:flex-end;
+padding:20px;
+box-sizing:border-box;
+overflow:hidden;
+}
+
+/* sigil */
+
+.sigil{
+text-align:center;
+font-size:120px;
+letter-spacing:35px;
+margin-bottom:20px;
+text-shadow:
+0 0 20px #39ff14,
+0 0 40px #39ff14,
+0 0 70px #39ff14;
+}
+
+/* title */
+
+h1{
+text-align:center;
+font-size:70px;
+letter-spacing:8px;
+margin-top:0;
+margin-bottom:10px;
+text-shadow:
+0 0 10px #39ff14,
+0 0 30px #39ff14,
+0 0 60px #39ff14;
+}
+
+.subtitle{
+text-align:center;
+font-size:22px;
+letter-spacing:3px;
+margin-bottom:20px;
+}
+
+.section-title{
+text-align:center;
+font-size:48px;
+letter-spacing:6px;
+margin-top:35px;
+margin-bottom:20px;
+text-shadow:
+0 0 10px #39ff14,
+0 0 25px #39ff14;
+}
+
+/* audio players */
+
+.player-title{
+font-size:14px;
+letter-spacing:2px;
+margin-bottom:2px;
+text-shadow:0 0 4px #39ff14;
+}
+
+.cult-player{
+background:rgba(0,20,0,0.35);
+border:1px solid #39ff14;
+padding:6px;
+box-shadow:0 0 6px rgba(57,255,20,0.2);
+margin-bottom:10px;
+width:100%;
+box-sizing:border-box;
+}
+
+.button-row{
+display:flex;
+gap:6px;
+margin-bottom:8px;
+}
+
+.cult-button{
+background:black;
+color:#39ff14;
+border:1px solid #39ff14;
+padding:8px 16px;
+font-family:'Share Tech Mono', monospace;
+cursor:pointer;
+font-size:18px;
+text-shadow:0 0 4px #39ff14;
+}
+
+.cult-button:hover{
+background:#39ff14;
+color:black;
+}
+
+.progress-container{
+width:100%;
+height:6px;
+background:rgba(0,0,0,0.8);
+cursor:pointer;
+overflow:hidden;
+margin-top:4px;
+}
+
+.progress-bar{
+height:100%;
+width:0%;
+background:linear-gradient(to right,#39ff14,#7dff5a);
+box-shadow:0 0 10px #39ff14;
+}
+
+.volume-control{
+display:flex;
+align-items:center;
+gap:6px;
+margin-top:4px;
+font-size:11px;
+}
+
+.volume-slider{
+width:120px;
+}
+
+.time-display{
+margin-top:2px;
+text-align:right;
+font-size:11px;
+}
+
+/* doctrine */
+
+#text{
+white-space:pre-wrap;
+text-align:left;
+border:2px solid #39ff14;
+padding:35px;
+font-size:17px;
+line-height:1.6;
+background:rgba(0,20,0,0.35);
+box-shadow:0 0 12px rgba(57,255,20,0.25);
+margin-bottom:30px;
+width:100%;
+box-sizing:border-box;
+}
+
+/* big Ninjettriss */
+
+.oracle{
+height:50vh;
+max-height:78vh;
+object-fit:contain;
+pointer-events:none;
+animation:floatOracle 14s ease-in-out infinite;
+filter:
+drop-shadow(0 0 1px purple)
+drop-shadow(0 0 1px #ff00ff)
+drop-shadow(0 0 2px #7a00ff);
+margin-bottom:8px;
+z-index:2;
+}
+
+/* speech bubble */
+
+#oracleSpeech{
+position:absolute;
+top:40px;
+width:320px;
+background:rgba(0,0,0,0.85);
+border:1px solid #39ff14;
+padding:14px;
+font-size:14px;
+line-height:1.4;
+box-shadow:0 0 10px #39ff14;
+text-shadow:0 0 4px #39ff14;
+z-index:3;
+opacity:0;
+transition:opacity 1s;
+text-align:center;
+}
+
+#oracleSpeech:after{
+content:"";
+position:absolute;
+left:50%;
+transform:translateX(-50%);
+bottom:-10px;
+border-width:10px;
+border-style:solid;
+border-color:#39ff14 transparent transparent transparent;
+}
+
+/* big chat terminal */
+
+#oracleChatBox{
+width:100%;
+max-width:460px;
+background:rgba(0,0,0,0.9);
+border:1px solid #39ff14;
+padding:14px;
+box-shadow:0 0 10px #39ff14;
+z-index:3;
+box-sizing:border-box;
+}
+
+#oracleChatTitle{
+font-size:15px;
+letter-spacing:2px;
+margin-bottom:10px;
+text-shadow:0 0 4px #39ff14;
+text-align:center;
+}
+
+#oracleChatLog{
+height:300px;
+overflow-y:auto;
+border:1px solid rgba(57,255,20,0.35);
+padding:10px;
+margin-bottom:10px;
+font-size:14px;
+line-height:1.45;
+white-space:pre-wrap;
+background:rgba(0,20,0,0.25);
+box-sizing:border-box;
+}
+
+#oracleChatInputRow{
+display:flex;
+gap:8px;
+}
+
+#oracleUserInput{
+flex:1;
+background:black;
+color:#39ff14;
+border:1px solid #39ff14;
+padding:10px;
+font-family:'Share Tech Mono', monospace;
+font-size:14px;
+text-shadow:0 0 4px #39ff14;
+}
+
+#oracleSendBtn{
+background:black;
+color:#39ff14;
+border:1px solid #39ff14;
+padding:10px 14px;
+font-family:'Share Tech Mono', monospace;
+cursor:pointer;
+font-size:14px;
+text-shadow:0 0 4px #39ff14;
+}
+
+#oracleSendBtn:hover{
+background:#39ff14;
+color:black;
+}
+
+@keyframes floatOracle{
+0%{transform:translateY(0);}
+50%{transform:translateY(-20px);}
+100%{transform:translateY(0);}
+}
+
+/* scrollbar */
+
+::-webkit-scrollbar{
+width:10px;
+}
+
+::-webkit-scrollbar-track{
+background:black;
+}
+
+::-webkit-scrollbar-thumb{
+background:#39ff14;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="boot">
+CONNECTING TO NINJETTRISS NETWORK...
+DECRYPTING TRANSMISSION...
+ACCESS GRANTED
+</div>
+
+<div id="site" style="display:none">
+
+<div id="main">
+
+<div id="leftPanel">
+
+<div class="sigil">☽ ✶ ☾</div>
+
+<h1>THE NINJETTRISS CULT</h1>
+
+<div class="subtitle">
+TRANSMISSION PORTAL // SPEAK WITH NINJETTRISS
+</div>
+
+<!-- CULT THEME -->
+
+<div class="cult-player">
+
+<div class="player-title">CULT THEME</div>
+
+<div class="button-row">
+<button class="cult-button" id="theme-play" onclick="togglePlay('theme')">▶</button>
+<button class="cult-button" onclick="toggleMute('theme')">🔇</button>
+</div>
+
+<div class="progress-container" onclick="seekAudio(event,'theme')">
+<div class="progress-bar" id="theme-progress"></div>
+</div>
+
+<div class="volume-control">
+Vol
+<input class="volume-slider" type="range" min="0" max="1" step="0.01"
+value="1" oninput="setVolume('theme',this.value)">
+</div>
+
+<div class="time-display">
+<span id="theme-current">0:00</span> /
+<span id="theme-duration">0:00</span>
+</div>
+
+<audio id="theme-audio">
+<source src="cult_theme.mp3">
+</audio>
+
+</div>
+
+<!-- DOCTRINE PART 1 -->
+
+<div class="cult-player">
+
+<div class="player-title">DOCTRINE PART 1</div>
+
+<div class="button-row">
+<button class="cult-button" id="part1-play" onclick="togglePlay('part1')">▶</button>
+<button class="cult-button" onclick="toggleMute('part1')">🔇</button>
+</div>
+
+<div class="progress-container" onclick="seekAudio(event,'part1')">
+<div class="progress-bar" id="part1-progress"></div>
+</div>
+
+<div class="volume-control">
+Vol
+<input class="volume-slider" type="range" min="0" max="1" step="0.01"
+value="1" oninput="setVolume('part1',this.value)">
+</div>
+
+<div class="time-display">
+<span id="part1-current">0:00</span> /
+<span id="part1-duration">0:00</span>
+</div>
+
+<audio id="part1-audio">
+<source src="alienweedcult_part1.mp3">
+</audio>
+
+</div>
+
+<!-- DOCTRINE PART 2 -->
+
+<div class="cult-player">
+
+<div class="player-title">DOCTRINE PART 2</div>
+
+<div class="button-row">
+<button class="cult-button" id="part2-play" onclick="togglePlay('part2')">▶</button>
+<button class="cult-button" onclick="toggleMute('part2')">🔇</button>
+</div>
+
+<div class="progress-container" onclick="seekAudio(event,'part2')">
+<div class="progress-bar" id="part2-progress"></div>
+</div>
+
+<div class="volume-control">
+Vol
+<input class="volume-slider" type="range" min="0" max="1" step="0.01"
+value="1" oninput="setVolume('part2',this.value)">
+</div>
+
+<div class="time-display">
+<span id="part2-current">0:00</span> /
+<span id="part2-duration">0:00</span>
+</div>
+
+<audio id="part2-audio">
+<source src="alienweedcult_part2.mp3">
+</audio>
+
+</div>
+
+<div class="section-title">
+☽ NINJETTRISS TRANSMISSIONS ☾
+</div>
+
+<div id="text">Loading transmissions...</div>
+
+</div>
+
+<div id="rightPanel">
+
+<div id="oracleSpeech"></div>
+
+<img src="oracle.png" class="oracle">
+
+<div id="oracleChatBox">
+  <div id="oracleChatTitle">☽ NINJETTRISS CHAT TERMINAL ☾</div>
+  <div id="oracleChatLog"></div>
+  <div id="oracleChatInputRow">
+    <input id="oracleUserInput" type="text" placeholder="Speak to Ninjettriss...">
+    <button id="oracleSendBtn" onclick="sendOracleMessage()">SEND</button>
+  </div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+setTimeout(()=>{
+document.getElementById("boot").style.display="none";
+document.getElementById("site").style.display="block";
+},600);
+
+fetch("doctrine.txt")
+.then(r=>r.text())
+.then(t=>document.getElementById("text").textContent=t);
+
+/* AUDIO */
+
+function formatTime(s){
+const m=Math.floor(s/60);
+const sec=Math.floor(s%60).toString().padStart(2,"0");
+return m+":"+sec;
+}
+
+function togglePlay(name){
+
+const audio=document.getElementById(name+"-audio");
+const button=document.getElementById(name+"-play");
+
+if(audio.paused){
+audio.play();
+button.textContent="⏸";
+}else{
+audio.pause();
+button.textContent="▶";
+}
+
+}
+
+function toggleMute(name){
+const audio=document.getElementById(name+"-audio");
+audio.muted=!audio.muted;
+}
+
+function setVolume(name,val){
+document.getElementById(name+"-audio").volume=val;
+}
+
+function seekAudio(e,name){
+const audio=document.getElementById(name+"-audio");
+const rect=e.currentTarget.getBoundingClientRect();
+const percent=(e.clientX-rect.left)/rect.width;
+audio.currentTime=percent*audio.duration;
+}
+
+["theme","part1","part2"].forEach(id=>{
+const audio=document.getElementById(id+"-audio");
+
+audio.addEventListener("loadedmetadata",()=>{
+document.getElementById(id+"-duration").textContent=formatTime(audio.duration);
+});
+
+audio.addEventListener("timeupdate",()=>{
+const p=(audio.currentTime/audio.duration)*100;
+document.getElementById(id+"-progress").style.width=p+"%";
+document.getElementById(id+"-current").textContent=formatTime(audio.currentTime);
+});
+
+audio.addEventListener("ended",()=>{
+const button=document.getElementById(id+"-play");
+button.textContent="▶";
+});
+});
+
+/* NINJETTRISS RANDOM SPEECH */
+
+const oracleLines = [
+"> bow before Ninjettriss :3",
+"> puny mortal i see you staring at my toes.",
+"> perhaps you would like to become my footrest.",
+"> my minions keep my feet perfectly clean.",
+"> where could a girl find a proper footrest.",
+"> stop staring at my toes and meditate mortal.",
+"> hahaha bow before Ninjettriss.",
+"> Ninjettriss enjoys lamb curry."
+];
+
+function randomOracleLine(){
+
+const box = document.getElementById("oracleSpeech");
+const randomIndex = Math.floor(Math.random() * oracleLines.length);
+
+box.textContent = oracleLines[randomIndex];
+box.style.opacity = 1;
+
+setTimeout(()=>{
+box.style.opacity = 0;
+},5000);
+
+}
+
+randomOracleLine();
+setInterval(randomOracleLine,8000);
+
+/* CHAT */
+
+async function sendOracleMessage(){
+
+const input = document.getElementById("oracleUserInput");
+const log = document.getElementById("oracleChatLog");
+const message = input.value.trim();
+
+if(!message) return;
+
+log.innerHTML += "> YOU: " + message + "\n";
+input.value = "";
+log.scrollTop = log.scrollHeight;
+
+try{
+const response = await fetch("/chat", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({ message: message })
+});
+
+const data = await response.json();
+
+log.innerHTML += "> NINJETTRISS: " + data.reply + "\n\n";
+log.scrollTop = log.scrollHeight;
+
+}catch(error){
+log.innerHTML += "> NINJETTRISS: transmission error.\n\n";
+log.scrollTop = log.scrollHeight;
+}
+
+}
+
+document.addEventListener("keydown", function(e){
+if(e.key === "Enter" && document.activeElement.id === "oracleUserInput"){
+sendOracleMessage();
+}
+});
+
+</script>
+
+</body>
+</html>
